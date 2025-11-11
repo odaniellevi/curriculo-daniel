@@ -1,25 +1,53 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import * as Location from "expo-location";
 
 export default function IndexDaniel() {
   const router = useRouter();
+  const [cidade, setCidade] = useState("");
+  const [saudacao, setSaudacao] = useState("");
+
+  useEffect(() => {
+    const hora = new Date().getHours();
+    if (hora < 12) setSaudacao("Bom dia");
+    else if (hora < 18) setSaudacao("Boa tarde");
+    else setSaudacao("Boa noite");
+
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") return;
+      let location = await Location.getCurrentPositionAsync({});
+      let geo = await Location.reverseGeocodeAsync(location.coords);
+      setCidade(geo[0].city || "");
+    })();
+  }, []);
 
   return (
     <LinearGradient
-      colors={["#660000ff" , "#000000ff"]}
+      colors={["#660000ff", "#000000ff"]}
       style={styles.container}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      <Image style={styles.image} source={require("../assets/images/daniel.jpg")} />
+      <Image
+        style={styles.image}
+        source={require("../assets/images/daniel.jpg")}
+      />
+
+      <View style={styles.saudacaoContainer}>
+        <Text style={styles.saudacaoText}>
+          {saudacao}! {cidade ? `Você está em ${cidade} ☀️` : ""}
+        </Text>
+      </View>
+
       <Text style={styles.title}>Daniel Levi</Text>
       <Text style={styles.text}>
         Meu nome é Daniel, tenho 19 anos e sou desenvolvedor de software.
-         Formado em Sistemas de Internet pela Universidade Católica 
-         de Pernambuco, onde aprendi programação Full-Stack, desenvolvi projetos
-          e participei da Residência de Software do Porto Digital.
+        Formado em Sistemas de Internet pela Universidade Católica de
+        Pernambuco, onde aprendi programação Full-Stack, desenvolvi projetos e
+        participei da Residência de Software do Porto Digital.
       </Text>
 
       <TouchableOpacity
@@ -49,7 +77,6 @@ export default function IndexDaniel() {
       >
         <Text style={styles.buttonText}>Contato</Text>
       </TouchableOpacity>
-
     </LinearGradient>
   );
 }
@@ -69,6 +96,15 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "#5d0000ff",
   },
+  saudacaoContainer: {
+    marginBottom: 15,
+  },
+  saudacaoText: {
+    fontSize: 18,
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "600",
+  },
   title: {
     fontSize: 28,
     fontWeight: "bold",
@@ -87,7 +123,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 8,
-    marginTop: 20,
+    marginTop: 15,
   },
   buttonText: {
     color: "#fff",
