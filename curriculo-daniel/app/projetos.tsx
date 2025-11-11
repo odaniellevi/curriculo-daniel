@@ -1,7 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, ScrollView, Text, View } from "react-native";
 
 const Projetos = () => {
     return (
